@@ -1,744 +1,574 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Workout Tracker</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>FULL BODY</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
+
+:root{
+    --lime:#d5ff40;
+    --bg:#070b12;
+    --card:#121826;
+    --card2:#151d2d;
+    --text:#ffffff;
+    --gray:#8f98aa;
+}
+
 *{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
 }
 
 body{
-  font-family:Arial, sans-serif;
-  background:#eef2ec;
-  color:#1c1f1d;
-  min-height:100vh;
-  padding:20px;
+    background:
+    radial-gradient(circle at top left, rgba(213,255,64,0.15), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(213,255,64,0.08), transparent 30%),
+    var(--bg);
+
+    color:white;
+    min-height:100vh;
+    overflow-x:hidden;
+}
+
+.glow{
+    position:fixed;
+    width:400px;
+    height:400px;
+    background:var(--lime);
+    filter:blur(160px);
+    opacity:0.12;
+    border-radius:50%;
+    top:-100px;
+    right:-100px;
+    z-index:0;
 }
 
 .container{
-  max-width:950px;
-  margin:auto;
+    position:relative;
+    z-index:2;
+    padding:28px;
+}
+
+.logo{
+    width:130px;
+    height:130px;
+    border-radius:42px;
+    background:linear-gradient(
+    135deg,
+    rgba(213,255,64,0.95),
+    rgba(170,220,30,0.55)
+    );
+
+    margin-bottom:34px;
+
+    box-shadow:
+    0 20px 60px rgba(213,255,64,0.2);
+
+    position:relative;
+    overflow:hidden;
+}
+
+.logo::before{
+    content:'';
+    position:absolute;
+    width:240px;
+    height:70px;
+    background:rgba(255,255,255,0.07);
+    transform:rotate(-45deg);
+    top:20px;
+    left:-50px;
+}
+
+.logo::after{
+    content:'✓';
+    position:absolute;
+    color:#0b0f17;
+    font-size:44px;
+    font-weight:800;
+    top:35px;
+    left:48px;
 }
 
 .title{
-  font-size:38px;
-  font-weight:800;
-  margin-bottom:25px;
-  color:#7ccf3d;
-  text-align:center;
+    font-size:56px;
+    line-height:1;
+    font-weight:800;
+    margin-bottom:12px;
 }
 
-.week-wrap{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-bottom:25px;
-  justify-content:center;
+.subtitle{
+    color:var(--gray);
+    margin-bottom:40px;
+    font-size:18px;
 }
 
-.week-btn{
-  border:none;
-  background:#ffffff;
-  color:#7ccf3d;
-  padding:12px 18px;
-  border-radius:16px;
-  font-size:15px;
-  cursor:pointer;
-  transition:0.2s;
-  border:1px solid rgba(183,255,79,0.15);
+.weeks{
+    display:flex;
+    gap:14px;
+    overflow:auto;
+    padding-bottom:8px;
+    margin-bottom:34px;
 }
 
-.week-btn.active{
-  background:#7ccf3d;
-  color:#111;
-  font-weight:bold;
-  box-shadow:0 10px 25px rgba(124,207,61,0.25);
+.weeks::-webkit-scrollbar{
+    display:none;
+}
+
+.week{
+    min-width:max-content;
+    padding:14px 22px;
+    border-radius:22px;
+    background:#182234;
+    color:white;
+    border:none;
+    font-size:17px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.25s;
+}
+
+.week.active{
+    background:var(--lime);
+    color:black;
+    box-shadow:0 0 30px rgba(213,255,64,0.35);
 }
 
 .training-card{
-  background:
-  linear-gradient(
-    135deg,
-    rgba(223,255,0,0.18),
-    rgba(255,255,255,0.88)
-  );
+    background:
+    linear-gradient(
+    145deg,
+    rgba(255,255,255,0.03),
+    rgba(255,255,255,0.01)
+    );
 
-  backdrop-filter:blur(18px);
+    backdrop-filter:blur(10px);
 
-  border-radius:34px;
-  padding:30px;
-  margin-bottom:24px;
+    border:1px solid rgba(255,255,255,0.05);
 
-  cursor:pointer;
-  transition:0.35s;
+    border-radius:34px;
+    padding:28px;
 
-  border:
-  1px solid rgba(223,255,0,0.22);
+    margin-bottom:22px;
 
-  box-shadow:
-  0 20px 50px rgba(223,255,0,0.10),
-  0 8px 20px rgba(0,0,0,0.04);
+    cursor:pointer;
 
-  position:relative;
-  overflow:hidden;
-}
+    transition:0.25s;
 
-.training-card::before{
-  content:'';
-
-  position:absolute;
-
-  width:320px;
-  height:320px;
-
-  border-radius:50%;
-
-  background:
-  radial-gradient(
-    circle,
-    rgba(223,255,0,0.30),
-    transparent 72%
-  );
-
-  top:-150px;
-  right:-120px;
+    position:relative;
+    overflow:hidden;
 }
 
 .training-card:hover{
-  transform:translateY(-5px);
+    transform:translateY(-3px);
+}
 
-  box-shadow:
-    0 18px 40px rgba(124,207,61,0.14),
-    0 8px 20px rgba(0,0,0,0.06);
+.training-card::before{
+    content:'';
+    position:absolute;
+    width:220px;
+    height:220px;
+    background:rgba(213,255,64,0.07);
+    border-radius:50%;
+    top:-100px;
+    right:-100px;
+}
+
+.training-card h2{
+    font-size:36px;
+    margin-bottom:10px;
+}
+
+.training-card p{
+    color:var(--gray);
+    font-size:16px;
+}
+
+.screen{
+    display:none;
+}
+
+.screen.active{
+    display:block;
+}
+
+.back{
+    width:56px;
+    height:56px;
+    border-radius:20px;
+    border:none;
+    background:#182234;
+    color:white;
+    font-size:26px;
+    margin-bottom:30px;
+    cursor:pointer;
 }
 
 .training-title{
-  font-size:32px;
-  font-weight:900;
-  color:#111827;
+    font-size:44px;
+    font-weight:800;
+    margin-bottom:28px;
 }
 
-.training-sub{
-  margin-top:10px;
-  color:#5d6a63;
-  font-size:16px;
-  position:relative;
-  z-index:2;
+.exercise{
+    background:
+    linear-gradient(
+    145deg,
+    rgba(255,255,255,0.03),
+    rgba(255,255,255,0.015)
+    );
+
+    border:1px solid rgba(255,255,255,0.05);
+
+    border-radius:30px;
+
+    padding:24px;
+
+    margin-bottom:18px;
 }
 
-.exercise-card{
-  background:#ffffff;
-  border-radius:26px;
-  padding:20px;
-  margin-bottom:20px;
-  border:1px solid rgba(183,255,79,0.08);
+.exercise-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
 }
 
 .exercise-name{
-  font-size:24px;
-  font-weight:800;
-  color:#202421;
-  margin-bottom:8px;
+    font-size:24px;
+    font-weight:700;
+    max-width:70%;
 }
 
-.exercise-info{
-  color:#6f7c72;
-  margin-bottom:16px;
-  line-height:1.5;
+.exercise-sets{
+    background:rgba(213,255,64,0.12);
+    color:var(--lime);
+    padding:10px 14px;
+    border-radius:16px;
+    font-size:15px;
+    font-weight:700;
 }
 
-.prev-result{
-  margin-top:8px;
-  color:#9db68f;
-  font-size:14px;
+.inputs{
+    display:flex;
+    gap:14px;
 }
 
-.sets-grid{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-  margin-top:18px;
-}
-
-.set-card{
-  display:flex;
-  align-items:center;
-  gap:16px;
-
-  background:#f7faf5;
-
-  border-radius:18px;
-  padding:16px 18px;
-
-  border:1px solid rgba(183,255,79,0.08);
-}
-
-
-.input-group{
-  flex:1;
-  margin-bottom:0;
+.input-box{
+    flex:1;
 }
 
 .input-label{
-  color:#6f7c72;
-  font-size:13px;
-  margin-bottom:5px;
+    color:var(--gray);
+    font-size:13px;
+    margin-bottom:8px;
 }
 
-input{
-  width:100%;
-  background:#ffffff;
-  border:none;
-  border-radius:12px;
-  padding:12px;
-  color:#1c1f1d;
-  font-size:16px;
-  outline:none;
-  border:1px solid rgba(183,255,79,0.08);
+.input{
+    width:100%;
+    background:#0d1420;
+    border:none;
+    border-radius:20px;
+    padding:18px;
+    color:white;
+    font-size:18px;
+    outline:none;
 }
 
-input:focus{
-  border:1px solid rgba(183,255,79,0.45);
-  box-shadow:0 0 12px rgba(183,255,79,0.2);
+.input:focus{
+    border:1px solid var(--lime);
+    box-shadow:0 0 20px rgba(213,255,64,0.15);
 }
 
-.history-btn{
-  margin-top:18px;
-  border:none;
-  background:#7ccf3d;
-  color:#111;
-  padding:12px 16px;
-  border-radius:14px;
-  font-weight:bold;
-  cursor:pointer;
+.saved{
+    margin-top:14px;
+    color:#7f8aa1;
+    font-size:13px;
 }
 
-.history-box{
-  margin-top:16px;
-  background:#f5f7f4;
-  border-radius:18px;
-  padding:16px;
+.big-number{
+    position:absolute;
+    right:24px;
+    bottom:-10px;
+    font-size:110px;
+    font-weight:800;
+    color:rgba(255,255,255,0.03);
 }
 
-.history-title{
-  font-size:18px;
-  font-weight:bold;
-  color:#7ccf3d;
-  margin-bottom:12px;
+@media(max-width:600px){
+
+.title{
+    font-size:42px;
 }
 
-.history-item{
-  padding:12px 0;
-  border-bottom:1px solid rgba(255,255,255,0.06);
-  color:#d3dfcf;
-  line-height:1.6;
+.training-card h2{
+    font-size:30px;
 }
 
-.history-item:last-child{
-  border-bottom:none;
+.exercise-name{
+    font-size:20px;
 }
 
-.chart-wrap{
-  margin-top:18px;
-  height:220px;
-  background:#f7faf6;
-  border-radius:18px;
-  padding:10px;
+.inputs{
+    flex-direction:row;
 }
 
-.back-btn{
-  border:none;
-  background:#7ccf3d;
-  color:#111;
-  padding:12px 18px;
-  border-radius:14px;
-  font-weight:bold;
-  margin-bottom:20px;
-  cursor:pointer;
 }
 
-.hidden{
-  display:none;
-}
-
-.save-status{
-  margin-top:12px;
-  color:#7ccf3d;
-  font-size:14px;
-}
-
-.total-volume{
-  margin-top:16px;
-  background:#f3f7f1;
-  border-radius:16px;
-  padding:14px;
-  color:#202421;
-  line-height:1.7;
-}
 </style>
 </head>
+
 <body>
+
+<div class="glow"></div>
 
 <div class="container">
 
-<div id="mainPage">
-  <div class="title">Workout Tracker</div>
+<!-- HOME -->
 
-  <div class="week-wrap" id="weeks"></div>
+<div id="home" class="screen active">
 
-  <div class="training-card" onclick="openTraining('Тренировка 1')">
-    <div class="training-title">Тренировка 1</div>
-    <div class="training-sub">Грудь • Спина • Ноги • Плечи</div>
-  </div>
+<div class="logo"></div>
 
-  <div class="training-card" onclick="openTraining('Тренировка 2')">
-    <div class="training-title">Тренировка 2</div>
-    <div class="training-sub">Тяга • Верх тела • Ноги</div>
-  </div>
-
-  <div class="training-card" onclick="openTraining('Тренировка 3')">
-    <div class="training-title">Тренировка 3</div>
-    <div class="training-sub">Грудь • Плечи • Руки</div>
-  </div>
+<div class="title">
+FULL BODY
 </div>
 
-<div id="trainingPage" class="hidden">
-  <button class="back-btn" onclick="goBack()">← Назад</button>
-  <div class="title" id="trainingTitle"></div>
-  <div id="exerciseList"></div>
+<div class="subtitle">
+Workout tracking system
 </div>
+
+<div class="weeks">
+
+<button class="week active" onclick="setWeek(this,'Легкая')">
+Легкая
+</button>
+
+<button class="week" onclick="setWeek(this,'Средняя 1')">
+Средняя 1
+</button>
+
+<button class="week" onclick="setWeek(this,'Средняя 2')">
+Средняя 2
+</button>
+
+<button class="week" onclick="setWeek(this,'Тяжелая')">
+Тяжелая
+</button>
+
+</div>
+
+<div class="training-card" onclick="openTraining(0)">
+<div class="big-number">1</div>
+<h2>Тренировка 1</h2>
+<p>Грудь • Спина • Ноги • Плечи</p>
+</div>
+
+<div class="training-card" onclick="openTraining(1)">
+<div class="big-number">2</div>
+<h2>Тренировка 2</h2>
+<p>Становая • Верх • Ноги • Руки</p>
+</div>
+
+<div class="training-card" onclick="openTraining(2)">
+<div class="big-number">3</div>
+<h2>Тренировка 3</h2>
+<p>Изоляция • Плечи • Руки • Пресс</p>
+</div>
+
+</div>
+
+<!-- TRAINING SCREEN -->
+
+<div id="trainingScreen" class="screen"></div>
 
 </div>
 
 <script>
-let selectedWeek = '1 неделя';
-let selectedTraining = '';
-let charts = {};
-let openedHistory = {};
 
-const workouts = {
+let currentWeek = "Легкая";
 
-'Тренировка 1':[
-  {name:'Жим лежа', sets:4},
-  {name:'Тяга нижнего блока', sets:4},
-  {name:'Жим ногами', sets:4},
-  {name:'Жим гантелей на плечи', sets:4},
-  {name:'Бицепс с косичкой', sets:3},
-  {name:'Сгибание на трицепс', sets:4},
-  {name:'Пресс', sets:3}
-],
+const trainings = [
 
-'Тренировка 2':[
-  {name:'Становая тяга', sets:4},
-  {name:'Жим на наклонной скамье', sets:4},
-  {name:'Верхний блок', sets:4},
-  {name:'Выпады', sets:3},
-  {name:'Сгибание ног в тренажере', sets:3},
-  {name:'Разводки на плечи', sets:3},
-  {name:'Сгибание с гантелями', sets:3},
-  {name:'Трицепс с гантелей', sets:3},
-  {name:'Икры', sets:3}
-],
-
-'Тренировка 3':[
-  {name:'Бабочка', sets:3},
-  {name:'Тяга нижнего блока', sets:4},
-  {name:'Разгибание ног в тренажере', sets:3},
-  {name:'Жим гантелей на плечи', sets:3},
-  {name:'Поднятие перед собой на плечи', sets:3},
-  {name:'Сгибание на бицепс в тренажере', sets:4},
-  {name:'Сгибание на трицепс', sets:3},
-  {name:'Пресс', sets:3}
+{
+title:"Тренировка 1",
+exercises:[
+["Жим лежа",4],
+["Тяга нижнего блока",4],
+["Жим ногами",4],
+["Жим гантелей на плечи",4],
+["Бицепс с косичкой",3],
+["Сгибание на трицепс",4],
+["Пресс",3]
 ]
+},
 
-};
+{
+title:"Тренировка 2",
+exercises:[
+["Становая тяга",4],
+["Жим на наклонной",4],
+["Верхний блок",4],
+["Выпады",3],
+["Сгибание ног",3],
+["Разводки на плечи",3],
+["Сгибание с гантелями",3],
+["Трицепс с гантелей",3],
+["Икры",3]
+]
+},
 
-function renderWeeks(){
-  const wrap = document.getElementById('weeks');
-  wrap.innerHTML = '';
-
-  ['1 неделя','2 неделя','3 неделя','4 неделя'].forEach(week=>{
-    const btn = document.createElement('button');
-    btn.className = 'week-btn';
-
-    if(week===selectedWeek){
-      btn.classList.add('active');
-    }
-
-    btn.innerText = week;
-
-    btn.onclick = ()=>{
-      selectedWeek = week;
-      renderWeeks();
-
-      if(selectedTraining){
-        renderExercises();
-      }
-    }
-
-    wrap.appendChild(btn);
-  })
+{
+title:"Тренировка 3",
+exercises:[
+["Бабочка",3],
+["Тяга нижнего блока",4],
+["Разгибание ног",3],
+["Жим гантелей на плечи",3],
+["Поднятие перед собой",3],
+["Бицепс в тренажере",4],
+["Сгибание на трицепс",3],
+["Пресс",3]
+]
 }
 
-function openTraining(name){
-  selectedTraining = name;
+];
 
-  document.getElementById('mainPage').classList.add('hidden');
-  document.getElementById('trainingPage').classList.remove('hidden');
+function setWeek(btn,week){
 
-  document.getElementById('trainingTitle').innerText = `${selectedWeek} • ${name}`;
+currentWeek = week;
 
-  renderExercises();
+document.querySelectorAll('.week')
+.forEach(el=>el.classList.remove('active'));
+
+btn.classList.add('active');
+
+}
+
+function openTraining(index){
+
+const training = trainings[index];
+
+document.getElementById('home')
+.classList.remove('active');
+
+const screen =
+document.getElementById('trainingScreen');
+
+screen.classList.add('active');
+
+let html = `
+<button class="back" onclick="goBack()">←</button>
+
+<div class="training-title">
+${training.title}
+</div>
+`;
+
+training.exercises.forEach(ex=>{
+
+const name = ex[0];
+const sets = ex[1];
+
+const weightKey =
+`${currentWeek}_${training.title}_${name}_weight`;
+
+const repsKey =
+`${currentWeek}_${training.title}_${name}_reps`;
+
+const weight =
+localStorage.getItem(weightKey) || '';
+
+const reps =
+localStorage.getItem(repsKey) || '';
+
+html += `
+
+<div class="exercise">
+
+<div class="exercise-top">
+
+<div class="exercise-name">
+${name}
+</div>
+
+<div class="exercise-sets">
+${sets} подхода
+</div>
+
+</div>
+
+<div class="inputs">
+
+<div class="input-box">
+
+<div class="input-label">
+Вес
+</div>
+
+<input
+class="input"
+type="number"
+placeholder="80"
+value="${weight}"
+oninput="save('${weightKey}',this.value)"
+>
+
+</div>
+
+<div class="input-box">
+
+<div class="input-label">
+Повторения
+</div>
+
+<input
+class="input"
+type="number"
+placeholder="10"
+value="${reps}"
+oninput="save('${repsKey}',this.value)"
+>
+
+</div>
+
+</div>
+
+<div class="saved">
+Автосохранение
+</div>
+
+</div>
+
+`;
+
+});
+
+screen.innerHTML = html;
+
 }
 
 function goBack(){
-  document.getElementById('trainingPage').classList.add('hidden');
-  document.getElementById('mainPage').classList.remove('hidden');
+
+document.getElementById('trainingScreen')
+.classList.remove('active');
+
+document.getElementById('home')
+.classList.add('active');
+
 }
 
-function makeKey(exercise){
-  return `${selectedWeek}_${selectedTraining}_${exercise}`;
+function save(key,value){
+localStorage.setItem(key,value);
 }
 
-function getHistory(exercise){
-  const history = [];
-
-  for(let i=1;i<=4;i++){
-    const key = `${i} неделя_${selectedTraining}_${exercise}`;
-    const raw = localStorage.getItem(key);
-
-    if(raw){
-      history.push({
-        week:`${i} неделя`,
-        ...JSON.parse(raw)
-      })
-    }
-  }
-
-  return history;
-}
-
-function getPreviousResult(exercise){
-  const currentWeek = parseInt(selectedWeek);
-
-  for(let i=currentWeek-1;i>=1;i--){
-    const key = `${i} неделя_${selectedTraining}_${exercise}`;
-    const raw = localStorage.getItem(key);
-
-    if(raw){
-      return JSON.parse(raw);
-    }
-  }
-
-  return null;
-}
-
-function renderExercises(){
-  const list = document.getElementById('exerciseList');
-  list.innerHTML = '';
-
-  document.getElementById('trainingTitle').innerText = `${selectedWeek} • ${selectedTraining}`;
-
-  workouts[selectedTraining].forEach((exerciseObj,index)=>{
-
-    const exercise = exerciseObj.name;
-    const sets = exerciseObj.sets;
-
-    const key = makeKey(exercise);
-    const saved = JSON.parse(localStorage.getItem(key) || '{}');
-
-    const prev = getPreviousResult(exercise);
-
-    const card = document.createElement('div');
-    card.className = 'exercise-card';
-
-    let setsHTML = '';
-
-    for(let s=1;s<=1;s++){
-      const savedSet = saved[`set_${s}`] || {};
-
-      setsHTML += `
-       <div class="set-card">
-
-  <div class="input-group">
-            <div class="input-label">Вес</div>
-            <input
-              type="number"
-              placeholder="Вес"
-              value="${savedSet.weight || ''}"
-              id="weight_${index}_${s}"
-              oninput="saveExercise(${index}, '${exercise}')"
-            >
-          </div>
-
-          <div class="input-group">
-            <div class="input-label">Повторения</div>
-            <input
-              type="number"
-              placeholder="Повторения"
-              value="${savedSet.reps || ''}"
-              id="reps_${index}_${s}"
-              oninput="saveExercise(${index}, '${exercise}')"
-            >
-          </div>
-        </div>
-      `;
-    }
-
-    card.innerHTML = `
-      <div class="exercise-name">${exercise}</div>
-
-      <div class="exercise-info">
-        ${sets} подхода(ов)<br>
-        Данные сохраняются автоматически
-      </div>
-
-      <div class="prev-result">
-        ${prev ? `Предыдущий результат найден` : `Нет прошлых результатов`}
-      </div>
-
-      <div class="sets-grid">
-        ${setsHTML}
-      </div>
-
-      <div class="save-status" id="status_${index}"></div>
-
-      <div class="total-volume" id="volume_${index}"></div>
-
-      <div class="chart-wrap">
-        <canvas id="chart_${index}"></canvas>
-      </div>
-
-      <button class="history-btn" onclick="toggleHistory(${index}, '${exercise}')">
-        История упражнения
-      </button>
-
-      <div id="history_${index}"></div>
-    `;
-
-    list.appendChild(card);
-
-    updateVolume(index,exercise,sets);
-    drawChart(index,exercise);
-
-    if(openedHistory[exercise]){
-      renderHistory(index,exercise);
-    }
-
-  })
-}
-
-function saveExercise(index,exercise){
-
-  const exerciseObj = workouts[selectedTraining].find(x=>x.name===exercise);
-  const sets = exerciseObj.sets;
-
-  const data = {};
-
-  for(let s=1;s<=sets;s++){
-    const weight = document.getElementById(`weight_${index}_${s}`).value;
-    const reps = document.getElementById(`reps_${index}_${s}`).value;
-
-    data[`set_${s}`] = {
-      weight,
-      reps
-    };
-  }
-
-  data.date = new Date().toLocaleDateString('ru-RU');
-
-  localStorage.setItem(makeKey(exercise),JSON.stringify(data));
-
-  document.getElementById(`status_${index}`).innerText = 'Сохранено';
-
-  setTimeout(()=>{
-    const el = document.getElementById(`status_${index}`);
-    if(el){
-      el.innerText = '';
-    }
-  },1000)
-
-  updateVolume(index,exercise,sets);
-  drawChart(index,exercise);
-
-  if(openedHistory[exercise]){
-    renderHistory(index,exercise);
-  }
-}
-
-function updateVolume(index,exercise,sets){
-
-  const saved = JSON.parse(localStorage.getItem(makeKey(exercise)) || '{}');
-
-  let total = 0;
-
-  for(let s=1;s<=sets;s++){
-    const set = saved[`set_${s}`] || {};
-
-    const w = parseFloat(set.weight) || 0;
-    const r = parseFloat(set.reps) || 0;
-
-    total += w*r;
-  }
-
-  document.getElementById(`volume_${index}`).innerHTML = `
-    Общий тоннаж упражнения:<br>
-    <strong>${total} кг</strong>
-  `;
-}
-
-function getChartData(exercise){
-  const labels = [];
-  const totals = [];
-
-  for(let i=1;i<=4;i++){
-    labels.push(`Нед ${i}`);
-
-    const raw = localStorage.getItem(`${i} неделя_${selectedTraining}_${exercise}`);
-
-    if(raw){
-      const data = JSON.parse(raw);
-
-      let total = 0;
-
-      Object.keys(data).forEach(key=>{
-        if(key.startsWith('set_')){
-          const set = data[key];
-          total += (parseFloat(set.weight)||0)*(parseFloat(set.reps)||0);
-        }
-      })
-
-      totals.push(total);
-    }else{
-      totals.push(0);
-    }
-  }
-
-  return {labels,totals};
-}
-
-function drawChart(index,exercise){
-
-  const ctx = document.getElementById(`chart_${index}`).getContext('2d');
-
-  if(charts[index]){
-    charts[index].destroy();
-  }
-
-  const chartData = getChartData(exercise);
-
-  charts[index] = new Chart(ctx, {
-    type:'line',
-    data:{
-      labels:chartData.labels,
-      datasets:[{
-        label:'Общий тоннаж',
-        data:chartData.totals,
-        borderColor:'#b7ff4f',
-        backgroundColor:'rgba(183,255,79,0.12)',
-        fill:true,
-        tension:0.35
-      }]
-    },
-    options:{
-      responsive:true,
-      maintainAspectRatio:false,
-      plugins:{
-        legend:{
-          labels:{
-            color:'#dfffaa'
-          }
-        }
-      },
-      scales:{
-        x:{
-          ticks:{color:'#9db68f'},
-          grid:{color:'rgba(255,255,255,0.05)'}
-        },
-        y:{
-          ticks:{color:'#9db68f'},
-          grid:{color:'rgba(255,255,255,0.05)'}
-        }
-      }
-    }
-  })
-}
-
-function toggleHistory(index,exercise){
-  openedHistory[exercise] = !openedHistory[exercise];
-
-  if(openedHistory[exercise]){
-    renderHistory(index,exercise);
-  }else{
-    document.getElementById(`history_${index}`).innerHTML = '';
-  }
-}
-
-function renderHistory(index,exercise){
-
-  const history = getHistory(exercise);
-
-  if(history.length===0){
-    document.getElementById(`history_${index}`).innerHTML = `
-      <div class="history-box">
-        <div class="history-title">История упражнения</div>
-        История пока пустая
-      </div>
-    `;
-
-    return;
-  }
-
-  let html = `
-    <div class="history-box">
-      <div class="history-title">История упражнения</div>
-  `;
-
-  history.forEach(item=>{
-
-    let total = 0;
-    let setsHTML = '';
-
-    Object.keys(item).forEach(key=>{
-      if(key.startsWith('set_')){
-
-        const set = item[key];
-
-        const w = parseFloat(set.weight)||0;
-        const r = parseFloat(set.reps)||0;
-
-        total += w*r;
-
-        setsHTML += `
-          Подход: ${w} кг × ${r}<br>
-        `;
-      }
-    })
-
-    html += `
-      <div class="history-item">
-        <strong>${item.week}</strong><br><br>
-        ${setsHTML}
-        Тоннаж: <strong>${total} кг</strong><br>
-        ${item.date ? `Дата: ${item.date}` : ''}
-      </div>
-    `;
-
-  })
-
-  html += '</div>';
-
-  document.getElementById(`history_${index}`).innerHTML = html;
-}
-
-renderWeeks();
 </script>
 
 </body>
