@@ -1,0 +1,745 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workout Tracker</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:Arial, sans-serif;
+  background:#eef2ec;
+  color:#1c1f1d;
+  min-height:100vh;
+  padding:20px;
+}
+
+.container{
+  max-width:950px;
+  margin:auto;
+}
+
+.title{
+  font-size:38px;
+  font-weight:800;
+  margin-bottom:25px;
+  color:#7ccf3d;
+  text-align:center;
+}
+
+.week-wrap{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:25px;
+  justify-content:center;
+}
+
+.week-btn{
+  border:none;
+  background:#ffffff;
+  color:#7ccf3d;
+  padding:12px 18px;
+  border-radius:16px;
+  font-size:15px;
+  cursor:pointer;
+  transition:0.2s;
+  border:1px solid rgba(183,255,79,0.15);
+}
+
+.week-btn.active{
+  background:#7ccf3d;
+  color:#111;
+  font-weight:bold;
+  box-shadow:0 10px 25px rgba(124,207,61,0.25);
+}
+
+.training-card{
+  background:
+  linear-gradient(
+    135deg,
+    rgba(223,255,0,0.18),
+    rgba(255,255,255,0.88)
+  );
+
+  backdrop-filter:blur(18px);
+
+  border-radius:34px;
+  padding:30px;
+  margin-bottom:24px;
+
+  cursor:pointer;
+  transition:0.35s;
+
+  border:
+  1px solid rgba(223,255,0,0.22);
+
+  box-shadow:
+  0 20px 50px rgba(223,255,0,0.10),
+  0 8px 20px rgba(0,0,0,0.04);
+
+  position:relative;
+  overflow:hidden;
+}
+
+.training-card::before{
+  content:'';
+
+  position:absolute;
+
+  width:320px;
+  height:320px;
+
+  border-radius:50%;
+
+  background:
+  radial-gradient(
+    circle,
+    rgba(223,255,0,0.30),
+    transparent 72%
+  );
+
+  top:-150px;
+  right:-120px;
+}
+
+.training-card:hover{
+  transform:translateY(-5px);
+
+  box-shadow:
+    0 18px 40px rgba(124,207,61,0.14),
+    0 8px 20px rgba(0,0,0,0.06);
+}
+
+.training-title{
+  font-size:32px;
+  font-weight:900;
+  color:#111827;
+}
+
+.training-sub{
+  margin-top:10px;
+  color:#5d6a63;
+  font-size:16px;
+  position:relative;
+  z-index:2;
+}
+
+.exercise-card{
+  background:#ffffff;
+  border-radius:26px;
+  padding:20px;
+  margin-bottom:20px;
+  border:1px solid rgba(183,255,79,0.08);
+}
+
+.exercise-name{
+  font-size:24px;
+  font-weight:800;
+  color:#202421;
+  margin-bottom:8px;
+}
+
+.exercise-info{
+  color:#6f7c72;
+  margin-bottom:16px;
+  line-height:1.5;
+}
+
+.prev-result{
+  margin-top:8px;
+  color:#9db68f;
+  font-size:14px;
+}
+
+.sets-grid{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-top:18px;
+}
+
+.set-card{
+  display:flex;
+  align-items:center;
+  gap:16px;
+
+  background:#f7faf5;
+
+  border-radius:18px;
+  padding:16px 18px;
+
+  border:1px solid rgba(183,255,79,0.08);
+}
+
+
+.input-group{
+  flex:1;
+  margin-bottom:0;
+}
+
+.input-label{
+  color:#6f7c72;
+  font-size:13px;
+  margin-bottom:5px;
+}
+
+input{
+  width:100%;
+  background:#ffffff;
+  border:none;
+  border-radius:12px;
+  padding:12px;
+  color:#1c1f1d;
+  font-size:16px;
+  outline:none;
+  border:1px solid rgba(183,255,79,0.08);
+}
+
+input:focus{
+  border:1px solid rgba(183,255,79,0.45);
+  box-shadow:0 0 12px rgba(183,255,79,0.2);
+}
+
+.history-btn{
+  margin-top:18px;
+  border:none;
+  background:#7ccf3d;
+  color:#111;
+  padding:12px 16px;
+  border-radius:14px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.history-box{
+  margin-top:16px;
+  background:#f5f7f4;
+  border-radius:18px;
+  padding:16px;
+}
+
+.history-title{
+  font-size:18px;
+  font-weight:bold;
+  color:#7ccf3d;
+  margin-bottom:12px;
+}
+
+.history-item{
+  padding:12px 0;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  color:#d3dfcf;
+  line-height:1.6;
+}
+
+.history-item:last-child{
+  border-bottom:none;
+}
+
+.chart-wrap{
+  margin-top:18px;
+  height:220px;
+  background:#f7faf6;
+  border-radius:18px;
+  padding:10px;
+}
+
+.back-btn{
+  border:none;
+  background:#7ccf3d;
+  color:#111;
+  padding:12px 18px;
+  border-radius:14px;
+  font-weight:bold;
+  margin-bottom:20px;
+  cursor:pointer;
+}
+
+.hidden{
+  display:none;
+}
+
+.save-status{
+  margin-top:12px;
+  color:#7ccf3d;
+  font-size:14px;
+}
+
+.total-volume{
+  margin-top:16px;
+  background:#f3f7f1;
+  border-radius:16px;
+  padding:14px;
+  color:#202421;
+  line-height:1.7;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div id="mainPage">
+  <div class="title">Workout Tracker</div>
+
+  <div class="week-wrap" id="weeks"></div>
+
+  <div class="training-card" onclick="openTraining('Тренировка 1')">
+    <div class="training-title">Тренировка 1</div>
+    <div class="training-sub">Грудь • Спина • Ноги • Плечи</div>
+  </div>
+
+  <div class="training-card" onclick="openTraining('Тренировка 2')">
+    <div class="training-title">Тренировка 2</div>
+    <div class="training-sub">Тяга • Верх тела • Ноги</div>
+  </div>
+
+  <div class="training-card" onclick="openTraining('Тренировка 3')">
+    <div class="training-title">Тренировка 3</div>
+    <div class="training-sub">Грудь • Плечи • Руки</div>
+  </div>
+</div>
+
+<div id="trainingPage" class="hidden">
+  <button class="back-btn" onclick="goBack()">← Назад</button>
+  <div class="title" id="trainingTitle"></div>
+  <div id="exerciseList"></div>
+</div>
+
+</div>
+
+<script>
+let selectedWeek = '1 неделя';
+let selectedTraining = '';
+let charts = {};
+let openedHistory = {};
+
+const workouts = {
+
+'Тренировка 1':[
+  {name:'Жим лежа', sets:4},
+  {name:'Тяга нижнего блока', sets:4},
+  {name:'Жим ногами', sets:4},
+  {name:'Жим гантелей на плечи', sets:4},
+  {name:'Бицепс с косичкой', sets:3},
+  {name:'Сгибание на трицепс', sets:4},
+  {name:'Пресс', sets:3}
+],
+
+'Тренировка 2':[
+  {name:'Становая тяга', sets:4},
+  {name:'Жим на наклонной скамье', sets:4},
+  {name:'Верхний блок', sets:4},
+  {name:'Выпады', sets:3},
+  {name:'Сгибание ног в тренажере', sets:3},
+  {name:'Разводки на плечи', sets:3},
+  {name:'Сгибание с гантелями', sets:3},
+  {name:'Трицепс с гантелей', sets:3},
+  {name:'Икры', sets:3}
+],
+
+'Тренировка 3':[
+  {name:'Бабочка', sets:3},
+  {name:'Тяга нижнего блока', sets:4},
+  {name:'Разгибание ног в тренажере', sets:3},
+  {name:'Жим гантелей на плечи', sets:3},
+  {name:'Поднятие перед собой на плечи', sets:3},
+  {name:'Сгибание на бицепс в тренажере', sets:4},
+  {name:'Сгибание на трицепс', sets:3},
+  {name:'Пресс', sets:3}
+]
+
+};
+
+function renderWeeks(){
+  const wrap = document.getElementById('weeks');
+  wrap.innerHTML = '';
+
+  ['1 неделя','2 неделя','3 неделя','4 неделя'].forEach(week=>{
+    const btn = document.createElement('button');
+    btn.className = 'week-btn';
+
+    if(week===selectedWeek){
+      btn.classList.add('active');
+    }
+
+    btn.innerText = week;
+
+    btn.onclick = ()=>{
+      selectedWeek = week;
+      renderWeeks();
+
+      if(selectedTraining){
+        renderExercises();
+      }
+    }
+
+    wrap.appendChild(btn);
+  })
+}
+
+function openTraining(name){
+  selectedTraining = name;
+
+  document.getElementById('mainPage').classList.add('hidden');
+  document.getElementById('trainingPage').classList.remove('hidden');
+
+  document.getElementById('trainingTitle').innerText = `${selectedWeek} • ${name}`;
+
+  renderExercises();
+}
+
+function goBack(){
+  document.getElementById('trainingPage').classList.add('hidden');
+  document.getElementById('mainPage').classList.remove('hidden');
+}
+
+function makeKey(exercise){
+  return `${selectedWeek}_${selectedTraining}_${exercise}`;
+}
+
+function getHistory(exercise){
+  const history = [];
+
+  for(let i=1;i<=4;i++){
+    const key = `${i} неделя_${selectedTraining}_${exercise}`;
+    const raw = localStorage.getItem(key);
+
+    if(raw){
+      history.push({
+        week:`${i} неделя`,
+        ...JSON.parse(raw)
+      })
+    }
+  }
+
+  return history;
+}
+
+function getPreviousResult(exercise){
+  const currentWeek = parseInt(selectedWeek);
+
+  for(let i=currentWeek-1;i>=1;i--){
+    const key = `${i} неделя_${selectedTraining}_${exercise}`;
+    const raw = localStorage.getItem(key);
+
+    if(raw){
+      return JSON.parse(raw);
+    }
+  }
+
+  return null;
+}
+
+function renderExercises(){
+  const list = document.getElementById('exerciseList');
+  list.innerHTML = '';
+
+  document.getElementById('trainingTitle').innerText = `${selectedWeek} • ${selectedTraining}`;
+
+  workouts[selectedTraining].forEach((exerciseObj,index)=>{
+
+    const exercise = exerciseObj.name;
+    const sets = exerciseObj.sets;
+
+    const key = makeKey(exercise);
+    const saved = JSON.parse(localStorage.getItem(key) || '{}');
+
+    const prev = getPreviousResult(exercise);
+
+    const card = document.createElement('div');
+    card.className = 'exercise-card';
+
+    let setsHTML = '';
+
+    for(let s=1;s<=1;s++){
+      const savedSet = saved[`set_${s}`] || {};
+
+      setsHTML += `
+       <div class="set-card">
+
+  <div class="input-group">
+            <div class="input-label">Вес</div>
+            <input
+              type="number"
+              placeholder="Вес"
+              value="${savedSet.weight || ''}"
+              id="weight_${index}_${s}"
+              oninput="saveExercise(${index}, '${exercise}')"
+            >
+          </div>
+
+          <div class="input-group">
+            <div class="input-label">Повторения</div>
+            <input
+              type="number"
+              placeholder="Повторения"
+              value="${savedSet.reps || ''}"
+              id="reps_${index}_${s}"
+              oninput="saveExercise(${index}, '${exercise}')"
+            >
+          </div>
+        </div>
+      `;
+    }
+
+    card.innerHTML = `
+      <div class="exercise-name">${exercise}</div>
+
+      <div class="exercise-info">
+        ${sets} подхода(ов)<br>
+        Данные сохраняются автоматически
+      </div>
+
+      <div class="prev-result">
+        ${prev ? `Предыдущий результат найден` : `Нет прошлых результатов`}
+      </div>
+
+      <div class="sets-grid">
+        ${setsHTML}
+      </div>
+
+      <div class="save-status" id="status_${index}"></div>
+
+      <div class="total-volume" id="volume_${index}"></div>
+
+      <div class="chart-wrap">
+        <canvas id="chart_${index}"></canvas>
+      </div>
+
+      <button class="history-btn" onclick="toggleHistory(${index}, '${exercise}')">
+        История упражнения
+      </button>
+
+      <div id="history_${index}"></div>
+    `;
+
+    list.appendChild(card);
+
+    updateVolume(index,exercise,sets);
+    drawChart(index,exercise);
+
+    if(openedHistory[exercise]){
+      renderHistory(index,exercise);
+    }
+
+  })
+}
+
+function saveExercise(index,exercise){
+
+  const exerciseObj = workouts[selectedTraining].find(x=>x.name===exercise);
+  const sets = exerciseObj.sets;
+
+  const data = {};
+
+  for(let s=1;s<=sets;s++){
+    const weight = document.getElementById(`weight_${index}_${s}`).value;
+    const reps = document.getElementById(`reps_${index}_${s}`).value;
+
+    data[`set_${s}`] = {
+      weight,
+      reps
+    };
+  }
+
+  data.date = new Date().toLocaleDateString('ru-RU');
+
+  localStorage.setItem(makeKey(exercise),JSON.stringify(data));
+
+  document.getElementById(`status_${index}`).innerText = 'Сохранено';
+
+  setTimeout(()=>{
+    const el = document.getElementById(`status_${index}`);
+    if(el){
+      el.innerText = '';
+    }
+  },1000)
+
+  updateVolume(index,exercise,sets);
+  drawChart(index,exercise);
+
+  if(openedHistory[exercise]){
+    renderHistory(index,exercise);
+  }
+}
+
+function updateVolume(index,exercise,sets){
+
+  const saved = JSON.parse(localStorage.getItem(makeKey(exercise)) || '{}');
+
+  let total = 0;
+
+  for(let s=1;s<=sets;s++){
+    const set = saved[`set_${s}`] || {};
+
+    const w = parseFloat(set.weight) || 0;
+    const r = parseFloat(set.reps) || 0;
+
+    total += w*r;
+  }
+
+  document.getElementById(`volume_${index}`).innerHTML = `
+    Общий тоннаж упражнения:<br>
+    <strong>${total} кг</strong>
+  `;
+}
+
+function getChartData(exercise){
+  const labels = [];
+  const totals = [];
+
+  for(let i=1;i<=4;i++){
+    labels.push(`Нед ${i}`);
+
+    const raw = localStorage.getItem(`${i} неделя_${selectedTraining}_${exercise}`);
+
+    if(raw){
+      const data = JSON.parse(raw);
+
+      let total = 0;
+
+      Object.keys(data).forEach(key=>{
+        if(key.startsWith('set_')){
+          const set = data[key];
+          total += (parseFloat(set.weight)||0)*(parseFloat(set.reps)||0);
+        }
+      })
+
+      totals.push(total);
+    }else{
+      totals.push(0);
+    }
+  }
+
+  return {labels,totals};
+}
+
+function drawChart(index,exercise){
+
+  const ctx = document.getElementById(`chart_${index}`).getContext('2d');
+
+  if(charts[index]){
+    charts[index].destroy();
+  }
+
+  const chartData = getChartData(exercise);
+
+  charts[index] = new Chart(ctx, {
+    type:'line',
+    data:{
+      labels:chartData.labels,
+      datasets:[{
+        label:'Общий тоннаж',
+        data:chartData.totals,
+        borderColor:'#b7ff4f',
+        backgroundColor:'rgba(183,255,79,0.12)',
+        fill:true,
+        tension:0.35
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{
+          labels:{
+            color:'#dfffaa'
+          }
+        }
+      },
+      scales:{
+        x:{
+          ticks:{color:'#9db68f'},
+          grid:{color:'rgba(255,255,255,0.05)'}
+        },
+        y:{
+          ticks:{color:'#9db68f'},
+          grid:{color:'rgba(255,255,255,0.05)'}
+        }
+      }
+    }
+  })
+}
+
+function toggleHistory(index,exercise){
+  openedHistory[exercise] = !openedHistory[exercise];
+
+  if(openedHistory[exercise]){
+    renderHistory(index,exercise);
+  }else{
+    document.getElementById(`history_${index}`).innerHTML = '';
+  }
+}
+
+function renderHistory(index,exercise){
+
+  const history = getHistory(exercise);
+
+  if(history.length===0){
+    document.getElementById(`history_${index}`).innerHTML = `
+      <div class="history-box">
+        <div class="history-title">История упражнения</div>
+        История пока пустая
+      </div>
+    `;
+
+    return;
+  }
+
+  let html = `
+    <div class="history-box">
+      <div class="history-title">История упражнения</div>
+  `;
+
+  history.forEach(item=>{
+
+    let total = 0;
+    let setsHTML = '';
+
+    Object.keys(item).forEach(key=>{
+      if(key.startsWith('set_')){
+
+        const set = item[key];
+
+        const w = parseFloat(set.weight)||0;
+        const r = parseFloat(set.reps)||0;
+
+        total += w*r;
+
+        setsHTML += `
+          Подход: ${w} кг × ${r}<br>
+        `;
+      }
+    })
+
+    html += `
+      <div class="history-item">
+        <strong>${item.week}</strong><br><br>
+        ${setsHTML}
+        Тоннаж: <strong>${total} кг</strong><br>
+        ${item.date ? `Дата: ${item.date}` : ''}
+      </div>
+    `;
+
+  })
+
+  html += '</div>';
+
+  document.getElementById(`history_${index}`).innerHTML = html;
+}
+
+renderWeeks();
+</script>
+
+</body>
+</html>
